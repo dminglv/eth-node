@@ -1,6 +1,6 @@
 .DS_Store
 .idea
 .env
-data/consensus
-data/execution
+eth-data/consensus
+eth-data/execution
 jwt/jwt.hex

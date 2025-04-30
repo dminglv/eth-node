@@ -4,44 +4,53 @@ services:
   geth:
     image: ethereum/client-go:stable
     container_name: eth-execution
+    stop_signal: SIGINT
+    stop_grace_period: 2m
     restart: unless-stopped
     ports:
       - "30303:30303"
       - "30303:30303/udp"
-      - "8545:8545"
-      - "8546:8546"
+      - "18545:8545"
+      - "18546:8546"
     volumes:
-      - ./data/execution:/root/.ethereum
+      - ./eth-data/execution:/root/.ethereum
       - ./jwt/jwt.hex:/jwt/jwt.hex:ro
     command:
       - --mainnet
       - --http
       - --http.addr=0.0.0.0
-      - --http.api=eth,net,web3,engine
+      - --http.api=eth,net,web3,debug
       - --http.corsdomain=*
       - --ws
       - --ws.addr=0.0.0.0
-      - --ws.api=eth,net,web3
+      - --ws.api=eth,net,web3,debug
       - --ws.origins=*
       - --syncmode=snap
       - --gcmode=full
+      - --snapshot=true
       - --cache=4096
       - --authrpc.jwtsecret=/jwt/jwt.hex
       - --authrpc.addr=0.0.0.0
       - --authrpc.port=8551
       - --authrpc.vhosts=*
-    stop_grace_period: 2m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
 
   lighthouse:
     image: sigp/lighthouse:latest
     container_name: eth-consensus
     restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 1m
     ports:
       - "9000:9000"
       - "9000:9000/udp"
     #  - "5052:5052"
     volumes:
-      - ./data/consensus:/root/.lighthouse
+      - ./eth-data/consensus:/root/.lighthouse
       - ./jwt/jwt.hex:/jwt/jwt.hex:ro
     command:
       - lighthouse
@@ -52,9 +61,13 @@ services:
       - --http
       - --http-address=0.0.0.0
       - --http-port=5052
-      - --checkpoint-sync-url=https://mainnet.checkpoint.sigp.io
+      - --checkpoint-sync-url=https://sync-mainnet.beaconcha.in
       - --disable-deposit-contract-sync
       - --prune-payloads=true
     depends_on:
       - geth
-    stop_grace_period: 1m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
