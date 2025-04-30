@@ -1,0 +1,6 @@
+.DS_Store
+.idea
+.env
+data/consensus
+data/execution
+jwt/jwt.hex

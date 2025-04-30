@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  geth:
+    image: ethereum/client-go:stable
+    container_name: eth-execution
+    restart: unless-stopped
+    ports:
+      - "30303:30303"
+      - "30303:30303/udp"
+      - "8545:8545"
+      - "8546:8546"
+    volumes:
+      - ./data/execution:/root/.ethereum
+      - ./jwt/jwt.hex:/jwt/jwt.hex:ro
+    command:
+      - --mainnet
+      - --http
+      - --http.addr=0.0.0.0
+      - --http.api=eth,net,web3,engine
+      - --http.corsdomain=*
+      - --ws
+      - --ws.addr=0.0.0.0
+      - --ws.api=eth,net,web3
+      - --ws.origins=*
+      - --syncmode=full
+      - --gcmode=full
+      - --cache=4096
+      - --authrpc.jwtsecret=/jwt/jwt.hex
+      - --authrpc.addr=0.0.0.0
+      - --authrpc.port=8551
+      - --authrpc.vhosts=*
+    stop_grace_period: 2m
+
+  lighthouse:
+    image: sigp/lighthouse:latest
+    container_name: eth-consensus
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9000:9000/udp"
+      - "5052:5052"
+    volumes:
+      - ./data/consensus:/root/.lighthouse
+      - ./jwt/jwt.hex:/jwt/jwt.hex:ro
+    command:
+      - lighthouse
+      - bn
+      - --network=mainnet
+      - --execution-endpoint=http://eth-execution:8551
+      - --execution-jwt=/jwt/jwt.hex
+      - --http
+      - --http-address=0.0.0.0
+      - --http-port=5052
+      - --checkpoint-sync-url=https://mainnet.checkpoint.sigp.io
+      - --disable-deposit-contract-sync
+    depends_on:
+      - geth
+    stop_grace_period: 1m
