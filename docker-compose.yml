@@ -26,7 +26,6 @@ services:
       - --ws.api=eth,net,web3,debug
       - --ws.origins=*
       - --syncmode=snap
-      - --gcmode=full
       - --snapshot=true
       - --cache=4096
       - --authrpc.jwtsecret=/jwt/jwt.hex
