@@ -23,7 +23,7 @@ services:
       - --ws.addr=0.0.0.0
       - --ws.api=eth,net,web3
       - --ws.origins=*
-      - --syncmode=full
+      - --syncmode=snap
       - --gcmode=full
       - --cache=4096
       - --authrpc.jwtsecret=/jwt/jwt.hex
@@ -54,6 +54,7 @@ services:
       - --http-port=5052
       - --checkpoint-sync-url=https://mainnet.checkpoint.sigp.io
       - --disable-deposit-contract-sync
+      - --prune-payloads=true
     depends_on:
       - geth
     stop_grace_period: 1m
