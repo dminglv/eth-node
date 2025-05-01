@@ -3,4 +3,5 @@
 .env
 eth-data/consensus
 eth-data/execution
+monitoring/grafana
 jwt/jwt.hex
