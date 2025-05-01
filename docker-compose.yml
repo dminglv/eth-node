@@ -63,7 +63,7 @@ services:
       - --http
       - --http-address=0.0.0.0
       - --http-port=5052
-      - --checkpoint-sync-url=https://sync-mainnet.beaconcha.in
+      - --checkpoint-sync-url=${CC_CHECKPOINT_SYNC_URL}
       - --disable-deposit-contract-sync
       - --prune-payloads=true
       - --metrics
